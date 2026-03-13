@@ -1,4 +1,11 @@
+Invoke-Expression (&starship init powershell)
+
 New-Alias -Name grep -Value Select-String
+
+function cc { 
+    Clear-Host
+    claude code
+}
 
 function l { Get-ChildItem }
 
@@ -25,7 +32,7 @@ function p([string]$project_name = "") {
     $clearPreviousOutput = "$([char]27)[$($rowCount)A$([char]27)[J"
 
     while ($running) {
-        Write-Host "============= Select the project =============" -ForegroundColor Yellow
+        Write-Host "`n============= Select a project =============" -ForegroundColor Yellow
         for ($i = 0; $i -lt $folders.Count; $i++) {
             if ($i -eq $selected) {
                 Write-Host "• $($folders[$i])" -ForegroundColor Green
@@ -33,7 +40,6 @@ function p([string]$project_name = "") {
                 Write-Host "  $($folders[$i])"
             }
         }
-        Write-Host "== [p]: projects directory - [q|Esc]: Quit ==" -ForegroundColor Yellow
 
         $input = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
         switch ($input.VirtualKeyCode) {
@@ -50,4 +56,14 @@ function p([string]$project_name = "") {
             13 { return Set-Location $env:PROJECTS_HOME/$($folders[$selected]) } # enter
         }
     }
+}
+
+# Import the Chocolatey Profile that contains the necessary code to enable
+# tab-completions to function for `choco`.
+# Be aware that if you are missing these lines from your profile, tab completion
+# for `choco` will not function.
+# See https://ch0.co/tab-completion for details.
+$ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
+if (Test-Path($ChocolateyProfile)) {
+  Import-Module "$ChocolateyProfile"
 }
