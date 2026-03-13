@@ -47,11 +47,7 @@ function p([string]$project_name = "") {
             }
             {$_ -in 27,81} { $running = $false } # q or esc
             80 { return Set-Location $env:PROJECTS_HOME } # p
-            13 { # enter
-                $selected_project = $folders[$selected]
-                $running = $false 
-                return Set-Location -Path "$env:PROJECTS_HOME/$selected_project"
-            }
+            13 { return Set-Location $env:PROJECTS_HOME/$($folders[$selected]) } # enter
         }
     }
 }
