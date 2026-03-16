@@ -4,7 +4,12 @@ New-Alias -Name grep -Value Select-String
 
 function cc { 
     Clear-Host
-    claude code
+    return claude code
+}
+
+function occ { 
+    Clear-Host
+    return ollama launch claude
 }
 
 function l { Get-ChildItem }
@@ -24,7 +29,7 @@ function pp { Set-Location $env:PROJECTS_HOME }
 function p([string]$project_name = "") {
     if ($project_name -ne "") { return Set-Location $env:PROJECTS_HOME/$project_name }
 
-    $folders = Get-ChildItem -Path $env:PROJECTS_HOME -Directory | Select-Object -ExpandProperty Name;
+    $folders = Get-ChildItem -Path $env:PROJECTS_HOME -Directory;
 
     $running = $true
     $selected = 0
@@ -35,9 +40,9 @@ function p([string]$project_name = "") {
         Write-Host "`n============= Select a project =============" -ForegroundColor Yellow
         for ($i = 0; $i -lt $folders.Count; $i++) {
             if ($i -eq $selected) {
-                Write-Host "• $($folders[$i])" -ForegroundColor Green
+                Write-Host "• $($folders[$i].Name)" -ForegroundColor Green
             } else {
-                Write-Host "  $($folders[$i])"
+                Write-Host "  $($folders[$i].Name)"
             }
         }
 
@@ -53,7 +58,7 @@ function p([string]$project_name = "") {
             }
             {$_ -in 27,81} { $running = $false } # q or esc
             80 { return Set-Location $env:PROJECTS_HOME } # p
-            13 { return Set-Location $env:PROJECTS_HOME/$($folders[$selected]) } # enter
+            13 { return Set-Location $env:PROJECTS_HOME/$($folders[$selected].Name) } # enter
         }
     }
 }
