@@ -2,7 +2,7 @@
 
 add_newline = true
 command_timeout = 1000
-format = """╭ $os$username$hostname$kubernetes$directory$git_branch$git_status\n╰ """
+format = """╭ $os$python$username$hostname$kubernetes$directory$git_branch$git_status\n╰ """
 
 # Drop ugly default prompt characters
 [character]
@@ -82,7 +82,12 @@ disabled = false
 disabled = true
 
 [python]
-disabled = true
+disabled = false
+format = '[\(venv\) ]($style)'
+style = 'white'
+detect_extensions = []
+detect_files = []
+detect_folders = []
 
 [nodejs]
 disabled = true
