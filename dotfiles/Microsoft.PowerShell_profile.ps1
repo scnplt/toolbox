@@ -1,67 +1,31 @@
 Invoke-Expression (&starship init powershell)
+Import-Module CompletionPredictor
+Import-Module Terminal-Icons
 
-New-Alias -Name grep -Value Select-String
+# Conf
+Set-PSReadLineOption -PredictionSource HistoryAndPlugin
+Set-PSReadlineOption -PredictionViewStyle ListView
+Set-PSReadlineOption -EditMode Windows
 
-function cc { 
-    Clear-Host
-    return claude code
-}
+# Aliases
+Set-Alias -Name l -Value Get-ChildItem
 
-function occ { 
-    Clear-Host
-    return ollama launch claude
-}
-
-function l { Get-ChildItem }
-
+# Navigation
 function d { Set-Location ~\Desktop }
+function p { Set-Location $env:PROJECTS_HOME }
 
+# Git
+function glo { git log --oneline --graph --decorate }
+function gpsh { git push }
+function gst { git status }
+function gpl { git pull }
+function gcm([string]$msg) { git commit -m "$msg" }
+function gcl([string]$rp) { git clone "https://github.com/$rp" }
+
+# Other
+function clearHistory {  Remove-Item (Get-PSReadlineOption).HistorySavePath }
 function conf { code $PROFILE }
-
-function gitl { git log --oneline --graph --decorate }
-
-function clearHistory { Remove-Item (Get-PSReadlineOption).HistorySavePath }
-
 function ports { netstat -aof }
-
-function pp { Set-Location $env:PROJECTS_HOME }
-
-function p([string]$project_name = "") {
-    if ($project_name -ne "") { return Set-Location $env:PROJECTS_HOME/$project_name }
-
-    $folders = Get-ChildItem -Path $env:PROJECTS_HOME -Directory;
-
-    $running = $true
-    $selected = 0
-    $rowCount = $folders.Count + 2
-    $clearPreviousOutput = "$([char]27)[$($rowCount)A$([char]27)[J"
-
-    while ($running) {
-        Write-Host "`n============= Select a project =============" -ForegroundColor Yellow
-        for ($i = 0; $i -lt $folders.Count; $i++) {
-            if ($i -eq $selected) {
-                Write-Host "• $($folders[$i].Name)" -ForegroundColor Green
-            } else {
-                Write-Host "  $($folders[$i].Name)"
-            }
-        }
-
-        $input = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-        switch ($input.VirtualKeyCode) {
-            {$_ -in 40,74} { # j or down
-                $selected = ($selected + 1) % $folders.Count
-                Write-Host -NoNewLine $clearPreviousOutput
-            } 
-            {$_ -in 38,75} { # k or up
-                $selected = ($selected - 1 + $folders.Count) % $folders.Count 
-                Write-Host -NoNewLine $clearPreviousOutput
-            }
-            {$_ -in 27,81} { $running = $false } # q or esc
-            80 { return Set-Location $env:PROJECTS_HOME } # p
-            13 { return Set-Location $env:PROJECTS_HOME/$($folders[$selected].Name) } # enter
-        }
-    }
-}
 
 # Import the Chocolatey Profile that contains the necessary code to enable
 # tab-completions to function for `choco`.
